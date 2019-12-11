@@ -28,10 +28,10 @@ void usage0(){
 
 void usage1(){
 	printf("\n指令說明：\n");
-	printf("/q, /quit: quit\n");
-	printf("/l : list online user\n");
-	printf("/chat : private chat to specific user\n");
-	printf("/chess : play tic tac toe to specific user\n");
+	printf("/q : 登出\n");
+	printf("/l : 印出在線用戶\n");
+	printf("/chat : 傳送私人訊息\n");
+	printf("/chess : 跟特定使用者下OX棋\n");
 }
 
 void print_board(){
@@ -103,7 +103,7 @@ void *receive(void *data){
 					printf("%s", message);
 					print_board();
 					if(strncmp("<TURN>", message, 6) == 0)
-						printf("<GAME> Please insert a number between 0~8\n>");
+						printf(" <GAME> Please insert a number between 0~8\n>");
 				}
 				else{
 					sscanf(message, "%d %d %d %d %d %d %d %d %d", &board[0], &board[1], &board[2], &board[3], &board[4], &board[5], &board[6], &board[7], &board[8]);
@@ -171,7 +171,7 @@ int main(int argc, char **argv){
 	}
 	
 	// name setting
-	printf("Enter your name: ");
+	printf("輸入您的名字： ");
 	scanf("%s", user_name);
 	strcpy(prompt, user_name);
 	strcat(prompt, ">");
@@ -196,7 +196,7 @@ int main(int argc, char **argv){
 	send_msg(prompt, socket_fd, &address, user_name);
 
 	// exit
-	printf("closed\n");
+	printf("關閉\n");
 	close(socket_fd);
 	pthread_exit(NULL);
 	return 0;

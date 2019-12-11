@@ -20,13 +20,13 @@ int board[MAX_MEM][9];
 char user[MAX_MEM][NAME_LEN];
 
 void usage(){
-	printf("Available number of user is %d\n", MAX_MEM);
+	printf("\nAvailable number of user is %d\n", MAX_MEM);
 	printf("Maximum user name is %d\n", NAME_LEN);
 	printf("Server port is set to be: %d\n", SERV_PORT);
-	printf("Maximum meg is %d\n\n", MAXLINE);
+	printf("Maximum message length is %d\n\n", MAXLINE);
 
-	printf("Function Intro:\n");
-	printf("/q, /quit :quit the server\n");
+	printf("Command Intro:\n");
+	printf("/q : quit the server\n");
 }
 
 void server_control(){
@@ -39,7 +39,7 @@ void server_control(){
 			close(listen_fd);
 			exit(0);
 		}
-		else if(strcmp(msg, "/help") == 0)
+		else if(strcmp(msg, "help") == 0)
 			usage();
 	}
 }
@@ -112,11 +112,11 @@ void game(int p1,int p2){
 		send(connect_fd[p2], msg_send, MAXLINE, 0);
 
 		if(check(p1)){
-			//sprintf(msg_send, "%d %d %d %d %d %d %d %d %d", board[p1][0], board[p1][1], board[p1][2], board[p1][3], board[p1][4], board[p1][5], board[p1][6], board[p1][7], board[p1][8]);
+			sprintf(msg_send, "%d %d %d %d %d %d %d %d %d", board[p1][0], board[p1][1], board[p1][2], board[p1][3], board[p1][4], board[p1][5], board[p1][6], board[p1][7], board[p1][8]);
 			//send(connect_fd[p1], msg_send, MAXLINE, 0);
 			send(connect_fd[p1], game3, strlen(game3), 0);
 
-			//sprintf(msg_send, "%d %d %d %d %d %d %d %d %d", board[p2][0], board[p2][1], board[p2][2], board[p2][3], board[p2][4], board[p2][5], board[p2][6], board[p2][7], board[p2][8]);
+			sprintf(msg_send, "%d %d %d %d %d %d %d %d %d", board[p2][0], board[p2][1], board[p2][2], board[p2][3], board[p2][4], board[p2][5], board[p2][6], board[p2][7], board[p2][8]);
 			//send(connect_fd[p2], msg_send, MAXLINE, 0);
 			send(connect_fd[p2], game2, strlen(game2), 0);
 			break;
@@ -154,7 +154,7 @@ void game(int p1,int p2){
 
 	game_state[p1] = -1;
 	game_state[p2] = -1;
-	printf("game terminated...\n");
+	printf("Game terminated.\n");
 }
 
 void receive_send(int n){
@@ -171,7 +171,7 @@ void receive_send(int n){
 	char msg4[]=" <SERVER> Target player rejected\n";
 	char msg5[]=" <SERVER> Target player accept, game start\n";
 
-	char game1[]="<GAME> game created!\n";
+	char game1[]="<GAME> Game created!\n";
 	
 	int i = 0;
 	int target_idx;
@@ -199,14 +199,14 @@ void receive_send(int n){
 
 			// quit
 			if(strcmp(msg_rcv, "/quit") == 0 || strcmp(msg_rcv, "/q") == 0){
-				printf("%s quitted\n", user_name);
+				printf("%s 離開\n", user_name);
 				close(connect_fd[n]);
 				connect_fd[n] = -1;
 				pthread_exit(&retval);
 			}
 			// list client name
 			else if(strncmp(msg_rcv, "/l", 2) == 0){
-				strcpy(msg_send, "\n<SERVER> Online:\n");
+				strcpy(msg_send, "\n<SERVER> 上線中：\n");
 				for(i = 0; i < MAX_MEM; i++){
 					if(connect_fd[i] != -1){
 						strcat(msg_send, user[i]);
@@ -217,7 +217,7 @@ void receive_send(int n){
 			}
 			// talk to specific user
 			else if(strncmp(msg_rcv, "/chat", 5) == 0){
-				printf("\nprivate message from %s ...\n", user_name);
+				printf("\n來自 %s 的私人訊息\n", user_name);
 				// ask for target user's name
 				send(connect_fd[n], msg1, strlen(msg1), 0);
 				length = recv(connect_fd[n], target_user, MAXLINE, 0);
@@ -343,6 +343,8 @@ int main(){
 	}
 	memset(user, '\0', sizeof(user));
 	printf("Initialize...\n");
+
+	usage();
 
 	// wait for client
 	while(1){
